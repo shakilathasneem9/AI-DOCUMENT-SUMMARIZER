@@ -3,6 +3,15 @@ from utils.pdf_reader import read_pdf
 from utils.docx_reader import read_docx
 from utils.summarizer import summarize_text, chat_with_pdf
 
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "summary" not in st.session_state:
+    st.session_state.summary = None
+
+if "document_text" not in st.session_state:
+    st.session_state.document_text = ""
 st.set_page_config(
     page_title="AI Document Summarizer",
     page_icon="📄",
