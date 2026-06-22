@@ -102,7 +102,5 @@ Give a clear, simple answer.
             )
             return response.text
 
-        except Exception:
-            time.sleep(2)
-
-    return "Model is busy. Try again in a few seconds."
+        except Exception as e:
+         return f"Gemini Error: {str(e)}"
