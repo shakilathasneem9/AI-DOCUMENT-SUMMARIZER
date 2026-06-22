@@ -18,7 +18,6 @@ def summarize_text(text, length):
     if not text:
         return "No text provided."
 
-    # Limit text size
     text = text[:30000]
 
     prompt = f"""
@@ -62,8 +61,7 @@ Document:
             )
             return response.text
 
-        except Exception as e:
-            print(f"Summary Error: {e}")
+        except Exception:
             time.sleep(2)
 
     return "Model is busy. Please try again later."
@@ -84,7 +82,7 @@ You are a helpful AI assistant.
 
 Answer ONLY using the document below.
 
-If the answer is not present, reply exactly:
+If not found, say:
 "Not found in document."
 
 Document:
@@ -104,8 +102,7 @@ Give a clear, simple answer.
             )
             return response.text
 
-        except Exception as e:
-            print(f"Chat Error: {e}")
+        except Exception:
             time.sleep(2)
 
     return "Model is busy. Try again in a few seconds."
