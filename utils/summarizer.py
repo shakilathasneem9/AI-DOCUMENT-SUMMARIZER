@@ -1,6 +1,7 @@
 from google import genai
 from dotenv import load_dotenv
 import os
+import time
 
 load_dotenv()
 
@@ -8,9 +9,6 @@ client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-# -----------------------------
-# 1. STRUCTURED SUMMARY
-# -----------------------------
 def summarize_text(text, length):
 
     if not text:
@@ -19,26 +17,9 @@ def summarize_text(text, length):
     text = text[:30000]
 
     prompt = f"""
-You are an expert student assistant and document analyzer.
+You are an expert student assistant.
 
-Create a structured, exam-ready summary of the document.
-
-Follow this format strictly:
-
-📌 Overview:
-Give a short 2-3 line explanation.
-
-🔑 Key Points:
-- Bullet points
-
-📚 Important Concepts:
-- Simple explanations
-
-❓ Possible Exam Questions:
-- Likely exam questions
-
-🧠 Simple Explanation:
-Explain in very easy language.
+Create a structured summary.
 
 Summary Length: {length}
 
@@ -46,34 +27,32 @@ Document:
 {text}
 """
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        return response.text
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
+            return response.text
 
-    except Exception as e:
-        return f"Gemini Error: {str(e)}"
+        except Exception as e:
+            if "503" in str(e):
+                time.sleep(3)
+                continue
+            return f"Gemini Error: {str(e)}"
+
+    return "Gemini is busy."
 
 
-# -----------------------------
-# 2. CHAT WITH PDF
-# -----------------------------
 def chat_with_pdf(text, question):
 
     if not text or not question:
-        return "Please provide both document and question."
+        return "Please provide both."
 
     text = text[:30000]
 
     prompt = f"""
-You are a helpful AI assistant.
-
-Answer ONLY using the document below.
-
-If the answer is not present, reply:
-Not found in document.
+Answer using document only.
 
 Document:
 {text}
@@ -82,12 +61,18 @@ Question:
 {question}
 """
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
-        return response.text
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
+            return response.text
 
-    except Exception as e:
-        return f"Gemini Error: {str(e)}"
+        except Exception as e:
+            if "503" in str(e):
+                time.sleep(3)
+                continue
+            return f"Gemini Error: {str(e)}"
+
+    return "Gemini is busy."
