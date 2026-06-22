@@ -1,11 +1,9 @@
 from google import genai
 from dotenv import load_dotenv
 import os
-import time
 
 load_dotenv()
 
-# Initialize Gemini client
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
@@ -42,29 +40,21 @@ Give a short 2-3 line explanation.
 🧠 Simple Explanation:
 Explain in very easy language.
 
-Rules:
-- Do NOT copy text
-- Focus on understanding
-- Keep it structured
-
 Summary Length: {length}
 
 Document:
 {text}
 """
 
-    for attempt in range(3):
-        try:
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt
-            )
-            return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        return response.text
 
-        except Exception:
-            time.sleep(2)
-
-    return "Model is busy. Please try again later."
+    except Exception as e:
+        return f"Gemini Error: {str(e)}"
 
 
 # -----------------------------
@@ -82,25 +72,22 @@ You are a helpful AI assistant.
 
 Answer ONLY using the document below.
 
-If not found, say:
-"Not found in document."
+If the answer is not present, reply:
+Not found in document.
 
 Document:
 {text}
 
 Question:
 {question}
-
-Give a clear, simple answer.
 """
 
-    for attempt in range(3):
-        try:
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt
-            )
-            return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        return response.text
 
-        except Exception as e:
-         return f"Gemini Error: {str(e)}"
+    except Exception as e:
+        return f"Gemini Error: {str(e)}"
