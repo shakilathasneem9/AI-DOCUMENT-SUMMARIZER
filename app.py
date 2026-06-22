@@ -13,6 +13,17 @@ st.title("📄 AI Document Summarizer")
 st.write("Upload a PDF, DOCX, or TXT file and interact with it using AI.")
 
 # -------------------------
+# CHAT SECTION (ALWAYS VISIBLE)
+# -------------------------
+st.markdown("---")
+st.subheader("💬 Chat with Document")
+
+question = st.text_input(
+    "Ask a question from the document",
+    placeholder="Upload a document and ask questions..."
+)
+
+# -------------------------
 # FILE UPLOAD
 # -------------------------
 uploaded_file = st.file_uploader(
@@ -25,11 +36,12 @@ summary_length = st.selectbox(
     ["Short", "Medium", "Long"]
 )
 
+# Store extracted text
+text = ""
+
 if uploaded_file:
 
     st.success(f"File Uploaded: {uploaded_file.name}")
-
-    text = ""
 
     try:
         # -------------------------
@@ -84,7 +96,12 @@ if uploaded_file:
             st.success("Summary generated successfully!")
 
             clean_name = uploaded_file.name
-            clean_name = clean_name.replace(".pdf", "").replace(".docx", "").replace(".txt", "")
+            clean_name = (
+                clean_name
+                .replace(".pdf", "")
+                .replace(".docx", "")
+                .replace(".txt", "")
+            )
 
             st.download_button(
                 label="📥 Download Summary",
@@ -93,22 +110,21 @@ if uploaded_file:
                 mime="text/plain"
             )
 
-        # -------------------------
-        # CHAT WITH PDF SECTION
-        # -------------------------
-        st.markdown("---")
-        st.subheader("💬 Chat with PDF")
-
-        question = st.text_input("Ask a question from the document")
-
-        if question:
-
-            with st.spinner("Thinking..."):
-
-                answer = chat_with_pdf(text, question)
-
-            st.markdown("### Answer")
-            st.write(answer)
-
     except Exception as e:
         st.error(f"Error: {e}")
+
+# -------------------------
+# CHAT LOGIC
+# -------------------------
+if question:
+
+    if uploaded_file and text:
+
+        with st.spinner("Thinking..."):
+            answer = chat_with_pdf(text, question)
+
+        st.markdown("### 🤖 Answer")
+        st.write(answer)
+
+    else:
+        st.warning("Please upload a document first.")
