@@ -12,16 +12,9 @@ st.set_page_config(
 st.title("📄 AI Document Summarizer")
 st.write("Upload a PDF, DOCX, or TXT file and interact with it using AI.")
 
-# -------------------------
-# CHAT SECTION (ALWAYS VISIBLE)
-# -------------------------
-st.markdown("---")
-st.subheader("💬 Chat with Document")
-
-question = st.text_input(
-    "Ask a question from the document",
-    placeholder="Upload a document and ask questions..."
-)
+# Chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 # -------------------------
 # FILE UPLOAD
@@ -36,12 +29,11 @@ summary_length = st.selectbox(
     ["Short", "Medium", "Long"]
 )
 
-# Store extracted text
-text = ""
-
 if uploaded_file:
 
     st.success(f"File Uploaded: {uploaded_file.name}")
+
+    text = ""
 
     try:
         # -------------------------
@@ -110,21 +102,41 @@ if uploaded_file:
                 mime="text/plain"
             )
 
+        # -------------------------
+        # CHAT SECTION
+        # -------------------------
+        st.markdown("---")
+        st.subheader("💬 Chat with Document")
+
+        # Show previous messages
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+        # Chat input at bottom
+        question = st.chat_input("Ask a question about the document")
+
+        if question:
+
+            # Show user message
+            st.session_state.messages.append(
+                {"role": "user", "content": question}
+            )
+
+            with st.chat_message("user"):
+                st.write(question)
+
+            # Generate answer
+            with st.spinner("Thinking..."):
+                answer = chat_with_pdf(text, question)
+
+            # Store assistant response
+            st.session_state.messages.append(
+                {"role": "assistant", "content": answer}
+            )
+
+            with st.chat_message("assistant"):
+                st.write(answer)
+
     except Exception as e:
         st.error(f"Error: {e}")
-
-# -------------------------
-# CHAT LOGIC
-# -------------------------
-if question:
-
-    if uploaded_file and text:
-
-        with st.spinner("Thinking..."):
-            answer = chat_with_pdf(text, question)
-
-        st.markdown("### 🤖 Answer")
-        st.write(answer)
-
-    else:
-        st.warning("Please upload a document first.")
