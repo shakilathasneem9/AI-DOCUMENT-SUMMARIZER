@@ -102,3 +102,7 @@ GitHub: https://github.com/shakilathasnem9
 ⭐ If you like this project
 
 Give it a star ⭐ and feel free to contribute!
+
+License
+
+This project is created for educational and portfolio purposes.
