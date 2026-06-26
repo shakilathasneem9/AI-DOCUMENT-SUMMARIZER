@@ -1,12 +1,6 @@
 # 📄 AI Document Summarizer & Chat Assistant
 
 An AI-powered Streamlit web app that allows users to upload documents (PDF, DOCX, TXT), generate structured summaries, and chat with the document using Google Gemini AI.
-
----
-
-## 🚀 Live Demo
-👉 https://your-app-link-here.streamlit.app
-
 ---
 
 ## ✨ Features
